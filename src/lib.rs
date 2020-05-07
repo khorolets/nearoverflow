@@ -6,8 +6,8 @@ use std::collections::HashMap;
 #[global_allocator]
 static ALLOC: wee_alloc::WeeAlloc = wee_alloc::WeeAlloc::INIT;
 
-const MIN_QUESTION_REWARD: u8 = 10;
-const ANSWER_PRICE: u8 = 1;
+const MIN_QUESTION_REWARD: u128 = 10_000_000_000_000_000_000_000_000;
+const ANSWER_PRICE: u128 = 1_000_000_000_000_000_000_000_000;
 
 type Stakes = HashMap<String, u128>;
 
@@ -250,7 +250,7 @@ mod tests {
             block_index: 0,
             block_timestamp: 0,
             epoch_height: 19,
-            account_balance: 10,
+            account_balance: 10u128.pow(24),
             account_locked_balance: 0,
             storage_usage: 0,
             attached_deposit,
@@ -263,7 +263,7 @@ mod tests {
 
     #[test]
     fn alice_can_create_question() {
-        let context = get_context(alice(), 10);
+        let context = get_context(alice(), MIN_QUESTION_REWARD);
         testing_env!(context);
         let mut contract = Ledger {
             stakes: HashMap::new(),
@@ -276,7 +276,7 @@ mod tests {
 
     #[test]
     fn bob_can_answer_alice_question() {
-        let context = get_context(bob(), 1);
+        let context = get_context(bob(), ANSWER_PRICE);
         testing_env!(context);
         let mut stakes: HashMap<String, u128> = HashMap::new();
         stakes.insert(alice(), 10);
@@ -302,7 +302,7 @@ mod tests {
 
     #[test]
     fn robin_can_upvote_for_existing_question() {
-        let context = get_context(robin(), 1);
+        let context = get_context(robin(), ANSWER_PRICE);
         testing_env!(context);
 
         let mut questions: HashMap<u32, Question> = HashMap::new();
